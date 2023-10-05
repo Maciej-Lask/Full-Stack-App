@@ -13,7 +13,7 @@ router.post('/register', imageUpload.single('avatar'), authController.register);
 router.post('/login', authController.login);
 
 // GET /auth/user – zwracający informację o aktualnie zalogowanym użytkowniku
-router.get('/user', authMiddleware, authController.getCurrentUser);
+router.get('/user', authController.getCurrentUser);
 
 // POST /auth/logout – do wylogowywania użytkownika
 router.post('/logout', authMiddleware, authController.logout);

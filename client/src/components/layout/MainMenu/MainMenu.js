@@ -6,51 +6,61 @@ import {
   NavbarBrand,
   Nav,
   NavItem,
-  NavLink  } from 'reactstrap';
+  NavLink,
+} from 'reactstrap';
 import { FaBars } from 'react-icons/fa';
 import './MainMenu.scss';
 import { useState } from 'react';
-
-import Logo from '../../common/Logo/Logo'
+import { useSelector } from 'react-redux';
 
 const MainMenu = () => {
-
- const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const user = useSelector((state) => state.user);
 
   const toggle = () => {
     setIsOpen(!isOpen);
-  }
+  };
 
   return (
     <div>
       <Navbar expand="md" className="animated fadeIn">
-        <NavbarBrand href="/">
-          <Logo />
-        </NavbarBrand>
         <NavbarToggler className="position-absolute" onClick={toggle}>
           <FaBars />
         </NavbarToggler>
         <Collapse isOpen={isOpen} navbar>
           <Nav className="ms-auto align-items-center" navbar>
             <NavItem>
-              <NavLink href="/">Browse</NavLink>
+              <NavLink href="/">Home</NavLink>
             </NavItem>
-            <NavItem className="d-block d-md-none d-xl-block">
-              <NavLink href="/privacy-policy">Privacy Policy</NavLink>
-            </NavItem>
-            <NavItem className="d-block d-md-none d-xl-block">
-              <NavLink href="/terms-of-use">Term of use</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink href="/submit">
-                <Button className="btn-pill" outline color="primary">Submit Photo</Button>
-              </NavLink>
-            </NavItem>
+            {!user ? ( // Check if the user is not logged in
+              <>
+                <NavItem className="d-block d-xl-block">
+                  <NavLink href="/sign-up">Sign Up</NavLink>
+                </NavItem>
+                <NavItem className="d-block d-xl-block">
+                  <NavLink href="/sign-in">Sign In</NavLink>
+                </NavItem>
+              </>
+            ) : (
+              // User is logged in
+              <>
+                <NavItem className="d-block d-xl-block">
+                  <NavLink href="/sign-out">Sign Out</NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink href="/ad/add">
+                    <Button className="btn-outline" outline color="success">
+                      Post ad
+                    </Button>
+                  </NavLink>
+                </NavItem>
+              </>
+            )}
           </Nav>
         </Collapse>
       </Navbar>
     </div>
   );
-}
+};
 
 export default MainMenu;

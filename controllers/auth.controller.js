@@ -8,7 +8,7 @@ const fs = require('fs');
 // Obsługuje żądanie POST /auth/register – do rejestracji nowego użytkownika
 exports.register = async (req, res) => {
   try {
-    const { login, password, avatar, phoneNumber } = req.body;
+    const { login, password, phoneNumber } = req.body;
     const fileType = req.file ? await getImageFileType(req.file) : 'unknown';
     // console.log(req.body, req.file);
     // const escapedLogin = lodash.escape(login);
@@ -28,19 +28,6 @@ exports.register = async (req, res) => {
     }
     // Weryfikacja danych
     if (
-      // !escapedLogin ||
-      // !escapedPassword ||
-      // !escapedAvatar ||
-      // !escapedPhoneNumber ||
-      // typeof escapedLogin !== 'string' ||
-      // typeof escapedPassword !== 'string' ||
-      // typeof escapedAvatar !== 'string' ||
-      // typeof escapedPhoneNumber !== 'string' ||
-      // escapedLogin.length < 3 ||
-      // escapedLogin.length > 20 ||
-      // escapedPassword.length < 6 ||
-      // escapedPassword.length > 25 ||
-      // escapedPhoneNumber.length < 9
       !login ||
       !password ||
       !req.file ||
@@ -56,9 +43,6 @@ exports.register = async (req, res) => {
       password.length > 25 ||
       phoneNumber.length < 9
     ) {
-      // if (req.file) {
-      //   fs.unlinkSync(`./public/uploads/${req.file.filename}`);
-      // }
       return res.status(400).json({ error: 'Incorrect registration data' });
     }
 
@@ -75,9 +59,9 @@ exports.register = async (req, res) => {
     res.status(201).json(newUser);
   } catch (error) {
     console.error(error);
-    // if (req.file) {
-    //   fs.unlinkSync(`./public/uploads/${req.file.filename}`);
-    // }
+    if (req.file) {
+      fs.unlinkSync(`./public/uploads/${req.file.filename}`);
+    }
     res.status(500).json({ error: 'Error while registering' });
   }
 };
@@ -119,8 +103,8 @@ exports.login = async (req, res) => {
 
 // Obsługuje żądanie GET /auth/user – zwracający informację o aktualnie zalogowanym użytkowniku
 exports.getCurrentUser = async (req, res) => {
-  const message = `User ${req.session.login} is logged`;
-  res.send({ message });
+  
+  res.send(req.session.login);
 };
 
 // Obsługuje żądanie POST /auth/logout – do wylogowywania użytkownika

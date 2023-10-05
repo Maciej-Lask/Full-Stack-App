@@ -19,7 +19,20 @@ const server = app.listen(process.env.PORT || 8000, () => {
 connectToDB();
 
 // add middleware
-app.use(cors());
+// app.use(cors());
+// if (process.env.NODE_ENV !== 'production') {
+//   app.use(
+//     cors({
+//       origin: ['http://localhost:3000'],
+//       credentials: true,
+//     })
+//   );
+// }
+const corsOptions = {
+  origin: 'http://localhost:3000', 
+  credentials: true, 
+};
+app.use(cors(corsOptions));
 // app.use(formidable({ uploadDir: './public/uploads/' }, [{
 //   event: 'fileBegin', // on every file upload...
 //     action: (req, res, next, name, file) => {

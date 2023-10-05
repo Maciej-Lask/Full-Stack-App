@@ -36,7 +36,7 @@ exports.createAd = async (req, res) => {
   try {
     const { title, content, price, location } = req.body;
     const fileType = req.file ? await getImageFileType(req.file) : 'unknown';
-    console.log(req.body, req.file);
+    // console.log(req.body, req.file);
     // Sprawdzanie, czy dane ogłoszenia są poprawne
     if (
       title &&
@@ -51,22 +51,21 @@ exports.createAd = async (req, res) => {
         content,
         price,
         location,
-        sellerInfo: req.session.userId, // Ustaw autora ogłoszenia jako zalogowanego użytkownika
-        image: req.file.filename, // Zapisz nazwę pliku obrazka
+        sellerInfo: req.session.userId,
+        image: req.file.filename,
       });
 
       res.status(201).json(newAd);
     } else {
+      console.log(title, content, price, location, req.file);
       if (req.file) {
-        // Usuń przesłany plik, jeśli wystąpił błąd
         fs.unlinkSync(`./public/uploads/${req.file.filename}`);
       }
-      
+
       res.status(400).json({ error: 'Nieprawidłowe dane ogłoszenia.' });
     }
   } catch (error) {
     if (req.file) {
-      // Usuń przesłany plik w przypadku błędu
       fs.unlinkSync(`./public/uploads/${req.file.filename}`);
     }
     console.error(error);
@@ -90,15 +89,13 @@ exports.deleteAd = async (req, res) => {
         .json({ error: 'Ogłoszenie nie zostało znalezione.' });
     }
 
-    // Sprawdź, czy zalogowany użytkownik jest autorem ogłoszenia
     if (ad.sellerInfo.toString() !== userId) {
       return res
         .status(403)
         .json({ error: 'Brak uprawnień do usunięcia tego ogłoszenia.' });
     }
-    console.log(ad.sellerInfo.toString());
+    // console.log(ad.sellerInfo.toString());
 
-    // Usuń plik obrazka z folderu "uploads"
     if (ad.image) {
       const imagePath = `./public/uploads/${ad.image}`;
       fs.unlinkSync(imagePath);
@@ -124,6 +121,7 @@ exports.updateAd = async (req, res) => {
   try {
     const adId = req.params.id;
     const userId = req.session.userId;
+    const fileType = req.file ? await getImageFileType(req.file) : 'unknown';
 
     const existingAd = await Ad.findById(adId);
 
@@ -139,14 +137,25 @@ exports.updateAd = async (req, res) => {
         .json({ error: 'Brak uprawnień do edycji tego ogłoszenia.' });
     }
 
+    if (!['image/jpeg', 'image/png', 'image/jpg'].includes(fileType)) {
+      return res.status(400).json({
+        error: 'Nieprawidłowy format pliku.',
+      })
+    }
+
     const updatedAdData = req.body;
 
-    if (req.file) {
+    if (
+      req.file &&
+      ['image/jpeg', 'image/png', 'image/jpg'].includes(fileType)
+    ) {
       if (existingAd.image) {
-        // Usuń stary obrazek, jeśli istnieje
         fs.unlinkSync(`./public/uploads/${existingAd.image}`);
       }
       updatedAdData.image = req.file.filename;
+    }
+    if (!req.file) {
+      updatedAdData.image = existingAd.image;
     }
 
     const updatedAd = await Ad.findByIdAndUpdate(adId, updatedAdData, {
@@ -164,7 +173,6 @@ exports.updateAd = async (req, res) => {
       .json({ error: 'Wystąpił błąd podczas aktualizacji ogłoszenia.' });
   }
 };
-
 
 // Obsługuje żądanie GET /api/ads/search/:searchPhrase
 exports.searchAdsByTitle = async (req, res) => {

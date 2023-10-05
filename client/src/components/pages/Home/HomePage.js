@@ -1,12 +1,10 @@
-import PromoBox from '../../features/PromoBox/PromoBox';
-import TrendingPhotos from '../../features/TrendingPhotos/TrendingPhotos';
-import PhotosCatalog from '../../features/PhotosCatalog/PhotosCatalog';
+import SearchForm from '../../features/SearchForm/SearchForm';
+import AdsSection from '../../features/AdsSection/AdsSection';
 
 const HomePage = () => (
   <div>
-    <PromoBox />
-    <TrendingPhotos />
-    <PhotosCatalog />
+    <SearchForm />
+    <AdsSection />
   </div>
 );
 
