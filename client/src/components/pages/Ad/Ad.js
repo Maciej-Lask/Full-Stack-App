@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Card, Button, Spinner } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { json, useParams } from 'react-router-dom';
 import { getAdById } from '../../../redux/adsRedux';
 import { IMAGES_URL, API_URL } from '../../../config';
 import { Link } from 'react-router-dom';
@@ -18,10 +18,9 @@ const Ad = () => {
   const ad = useSelector((state) => getAdById(state, id));
   const user = localStorage.getItem('user');
   // console.log(user);
-  // console.log(typeof user);
-  // console.log(ad.sellerInfo.login);
-  // console.log(typeof ad.sellerInfo.login);
-  const isAuthor = (user===`"${ad.sellerInfo.login}"`) ? true : false;
+  // console.log(JSON.stringify(ad.sellerInfo.login));
+  const author = JSON.stringify(ad.sellerInfo.login);
+  const isAuthor = (user===author) ? true : false;
   console.log(isAuthor);
   
   const [status, setStatus] = useState(null); // null, success, serverError, clientError, loginError, loading
