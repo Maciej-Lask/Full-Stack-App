@@ -17,10 +17,14 @@ const Ad = () => {
   const { id } = useParams();
   const ad = useSelector((state) => getAdById(state, id));
   const user = localStorage.getItem('user');
+  let author = '';  
   // console.log(user);
   // console.log(JSON.stringify(ad.sellerInfo.login));
-  const author = JSON.stringify(ad.sellerInfo.login);
-  const isAuthor = (user===author) ? true : false;
+  if(ad){
+    author = JSON.stringify(ad.sellerInfo.login);
+
+  }
+  const isAuthor = (user===author);
   console.log(isAuthor);
   
   const [status, setStatus] = useState(null); // null, success, serverError, clientError, loginError, loading
